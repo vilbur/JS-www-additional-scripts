@@ -1,0 +1,241 @@
+//console.clear()
+/*
+	GoogleDrive link
+	https://drivenotepad.github.io/app/?state={%22action%22:%22open%22,%22ids%22:[%220B_tdJXayFOj2VkRxSng4SXRKNTA%22]}
+*/
+
+/** how offen is url change detected
+ */
+window.url_check_refresh_interval = 1000;
+
+/** DEFINE WHICH FUNCTION IS EXECUTED WHEN URL MATCH KEY
+ */
+window.ejs_function_on_url = {
+	'rapidView=': 'addIssuesColorsCss', // Kanban board page and backlog page
+	//'CsvFieldMappingsPage': 'getImportFields',
+	'CsvFieldMappingsPage': 'setImportFields',
+};
+
+/** DEFINE COLORS FOR ISSUE PRIORITIES
+ */
+window.issues_priority_colors = {
+	'Highest priority':	'#FC0000',
+	'High priority':	'#FF9F32',
+	'Medium priority':	'', //#E0D128',
+	'Low priority':	'#68E24D',
+	'Lowest priority':	'#65A5ED'			
+};
+/** DEFINE 'SOURCE LABEL':'TARGET COLUMN' on SCV import
+ */
+window.csv_import_values = {
+    "Assignee": "Assignee",
+    "Custom field (Epic Color)": "Epic Color",
+    "Issue Type": "Issue Type",
+    "Issue id": "Issue Id",
+    "Summary": "Summary",
+};
+
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+/* COLORIZE KANBAN BOARD ISSUES	*/
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+
+/** GET ALL PRESENTED ISSUE TYPES TO OBJECT
+ *  @return object all issue types as keys and colors and values
+ */
+function getPresentedIssuesColors(){
+	var issue_types_presented	= [];
+	var issue_colors_presented	= {};
+
+	/* get issue color on KANBAN BOARD PAGE or BACKLOG PAGE */
+	$('.ghx-issue .ghx-field-icon:first-child, .js-issue .ghx-type').each(function(){
+		var issue_type = $(this).hasClass('ghx-field-icon') ? $(this).data('tooltip') : $(this).attr('title');
+		console.log('issue_type='+issue_type);
+		if(issue_types_presented.indexOf(issue_type) === -1 ) {
+			var issue_wrapper	= $(this).closest('.ghx-issue, .js-issue');
+			var type_color	= issue_wrapper.find('.ghx-grabber').css('backgroundColor');
+			var type_id	= /.*ghx-type-(\d+).*/gi.exec(issue_wrapper.attr('class'));
+			issue_colors_presented[type_id.pop()] = type_color;
+		}
+	});
+	//console.log( 'issue_types_presented=\n'+JSON.stringify( issue_types_presented, null, 2) )
+	//console.log( 'issue_colors_presented=\n'+JSON.stringify( issue_colors_presented, null, 2) )	
+	return issue_colors_presented;
+}
+
+/** Colorize issues  */
+window.addIssuesColorsCss = function (){
+	colorizePriorities();
+	if ( $(".ejs-issue-type-colors").length ) return;
+
+	//GET ALL PRESENTED ISSUE TYPES TO ARRAY
+	var issue_colors_presented = getPresentedIssuesColors();
+	console.clear();
+	console.log(' ------------ Chrome extension EJS by vilbur - issue_colors_presented='+JSON.stringify(issue_colors_presented, null, 4));
+
+    //var task_selected_type = $('.ghx-selected .ghx-field-icon').data('tooltip');
+    // $('#ghx-detail-head')
+    //        	.css('background-color', issue_colors_presented[task_selected_type]);
+
+	var css_string = '';	
+	$.each( issue_colors_presented, function( issue_id, color ) {
+		 css_string += '.ghx-type-'+issue_id+'{background-color:'+color+'}';
+	});
+
+	/* selected issue color */
+	css_string += '.ghx-selected{background-color:lightgrey !important}';
+	
+	/* remove issue`s unwanted background colors */
+	css_string += '.ghx-row.ghx-end{background-color:inherit !important}';
+
+	$('<style class="ejs-issue-type-colors">'+css_string+'</style>').insertAfter($('style').last());
+		
+};
+
+/** Colorize priorities
+*/
+function colorizePriorities(){
+
+	$.each( window.issues_priority_colors, function( priority_title, color ) {
+		if(color!=='')
+			$('span[data-tooltip="'+priority_title+'"]').closest('.ghx-issue, .js-issue').css('border', '1px solid '+color);
+	});
+}
+
+
+
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+/* AUTO FILL FORM ON IMPORT CSV PROJECT https://confluence.atlassian.com/adminjiraserver071/importing-data-from-csv-802592885.html	*/
+/* CSV SOURCE MUST BE JIRA EXPORTED CSV, !!!NOT EXCEL	*/
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+
+/**
+ */
+window.getImportFields = function (){
+	$('#fieldMappings tbody tr').each(function(){
+		var key = $(this).find('.column-name').html();
+		var value =  $(this).find('.field-group input').text();
+		if(value && value[1]!=='jim-csv-field-disabled')
+			window.csv_import_values[key] = value.pop();
+	});
+	console.log(JSON.stringify(window.csv_import_values, null, 4));
+};
+/**
+ */
+window.setImportFields = function (){
+	var answer = confirm ("Do You Want Show only common fields ?");
+
+		var csv_import_values_keys	= Object.keys(csv_import_values);
+		
+		$('#fieldMappings .column-name').each(function(){
+			var label_text = $(this).html();
+			
+			var tr = $(this).closest('tr');
+			if(!answer && csv_import_values_keys.indexOf(label_text) > -1 ) {
+				tr.css('background-color', 'lightblue');
+
+			}else if (answer && csv_import_values_keys.indexOf(label_text) < 0)
+				tr.hide();
+				
+			if(csv_import_values_keys.indexOf(label_text) > -1 ) 
+				tr.find('input').val(csv_import_values[label_text]);
+	});
+	console.log(JSON.stringify(csv_import_values));	
+};
+
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+/* EDIT ISSUE SCREEN	*/
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+
+
+/* AUTORESIZE DESCRIPTION TEXTAREA */
+		
+	/* Kanban board On Double clik task >>> open edit task  */	
+	/* Releases On Double click >>> Edit Release */
+	$(document).on('dblclick','.ghx-issue, .js-issue',function(){
+	   // alert('test')
+		setTimeout( function(){ 
+			 $('#editIssue, .version-edit-dialog').click();
+		}, 100);
+	});
+	/* close edit issue screen on click out of modal dialog */
+	$(document).on('click','.aui-blanket',function(){
+		setTimeout( function(){ 
+			$('.cancel').click();
+		}, 100);
+	});
+	
+function description_autosize() {
+	//console.log('test')
+	var textarea	= $('textarea#description');
+	textarea.attr('rows', '');
+	//var textareaEl	= document.querySelector('textarea#description');
+	//textarea.css('border', '1px solid red');
+
+	textarea.css('height', '');
+	var height_default	= textarea.outerHeight();	
+	textarea.css('height', 'auto');
+	var height_auto	= textarea.outerHeight();
+	var height_scroll	= document.querySelector('textarea#description').scrollHeight;	
+	
+		if(height_scroll>height_default){
+			textarea.css('height', height_scroll +8+'px')
+				.css('overflow', 'hidden')
+			console.log('----- AUTO HEIGHT');
+		}
+		else{
+			textarea.css('height', height_default +'px');
+			console.log('----- DEFAULT HEIGHT');
+		}
+		
+}
+
+	
+$('document').ready(function(){
+	
+
+	$(document).on( "focus", 'textarea', description_autosize);
+	$(document).on( "keydown", 'textarea',description_autosize);
+});
+
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+/* PUBLISH DRAFT - PREFILL FORM	*/
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+
+$('#publish_draft_workflow').on('click', function(){
+	setTimeout( function(){ 
+		$('#publish-workflow-false').attr('checked', 'checked');
+	}, 500);
+});
+
+
+
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+/* TRIGGERS ON URL	*/
+/*-------------------------------------------------------------------------------------------------------------------------	*/
+
+/** CHECK URL CHANGE
+*/
+var url_last = null;
+var url_current = null;
+setInterval(function() {
+	url_current = window.location.href;
+	
+	if(url_current!==url_last){
+		triggerFunctionOnUrl();
+		url_last = url_current;
+	}
+}, window.url_check_refresh_interval); 
+
+/**
+ */
+function triggerFunctionOnUrl(){
+
+	var match_url_functions	= window.ejs_function_on_url;
+	var match_keys	= Object.keys(match_url_functions);
+	
+	var match_url_current = (new RegExp( '.*('+ match_keys.join('|')+').*'  , "gi")).exec(url_current);
+	if (match_url_current) 
+		window[match_url_functions[match_url_current.pop()]]();
+	
+}
+

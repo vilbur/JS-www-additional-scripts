@@ -1,0 +1,519 @@
+/*==================================================================================================================================
+
+	STYLISH CUSTOM STYLE REQUIRED FOR SCRIPTS: https://userstyles.org/styles/148176
+
+==================================================================================================================================
+
+	MAINS TOOLBAR:
+		Add custom icons
+		
+		
+		
+ ------------------------------------------------------------------------
+	
+	FLOATING DIALOGS:
+		set predefined positions, aligned to left or right side of window
+		
+ ------------------------------------------------------------------------
+ 
+ 	SHAPE POSITION:
+		check position and colorize inputs with non round values                                                      
+	
+ ------------------------------------------------------------------------
+ 
+	BREADCUMS:
+		Change DEFAULT breadcumns to DETAILED breadcums, DETAILED shows more about actual position in group hierarchy
+		DEFAULT:	PAGE > GROUP	> GROUP > GROUP		// default just show that GROUP in hierarchy is selected
+		DETAILED:	PAGE > SET	> GROUP > SHAPE		// detailed shows more about selection: PAGE level > SET of groups > GROUP of shapes > SHAPE itself
+		
+ ------------------------------------------------------------------------
+ 
+	GROUPS:
+		Go to page level of selection - KEYBOARD SHORTCUT: Alt+Shift+G
+		
+ ------------------------------------------------------------------------
+ 
+	SELECTION:
+		Lock|Unlock selection toggle - KEYBOARD SHORTCUT: Shift+Space
+		
+ ------------------------------------------------------------------------
+ 
+	RIGHT SIDEBAR:
+		Auto expand page settings
+		
+ ------------------------------------------------------------------------
+ 
+	ORG CHART:
+		ON IMPORT - skip next steps, import directly after set of data
+		FLOATING SETTINGS DIALOG: set 'auto layout' and close dialog
+		
+==================================================================================================================================*/
+
+
+/* ================================================================================================================================== */
+/*	ORG CHART:                                                                                                               */
+/* ================================================================================================================================== */
+/** IMPORT 'ORG CHART' DATA - skips next 
+*/
+$(document).on('click','lucid-org-chart-upload .highlight.footer-button.next-button', function(e) {
+	var answer = confirm ("Skip next steps ?");
+	if (answer)
+		for(var i=1; i<=4;i++) {
+			var btn_name = i<4?'next':'finish';
+			$('.highlight.footer-button.'+btn_name+'-button').click();		
+		}
+});
+
+
+/** SETTINGS DIALOG On middle click in 'Org chart options floating dialog'
+*/
+$(document).on('mousedown','.dock-panel.double.context-panel', function(e) {
+    //if (e.which === 1)
+		//setWindowTitle();
+    if (e.which === 2){
+		/* Cleanup layout */
+		$('.dock-panel.double.context-panel .button.btn-block').click();
+		/* Close dialog */		
+		$('.dock-panel.double.context-panel .panel-close').click();		
+	}
+});
+
+
+/* ================================================================================================================================== */
+/*	FLOATING DIALOGS:                                                                                                                 */
+/* ================================================================================================================================== */
+
+/* Dialogs positions
+ *
+ */
+var dialog_align = 'right'; // set dialog position by top left OF top right corner
+/* dialog positions [x,y] iIF x==0 then dialog align to side of working area */
+var dialog_positons={
+	"Shape Options":	[-5, 100],
+	"Fill Color":	[-5, 318],
+	"Line Options":	[-5, 520],
+	"Line Color":	[-5, 585],
+	"Text Options":	[-5, 760],
+	"Text Color":	[-5, 918],
+	"Find & Replace":	[-5, 1090],	
+};
+/* Set popout dialogs positions
+*/
+function setDialogPositions(){
+	/* Set popout dialog header height */
+	//$('span:contains("Line Options")').closest('lucid-callout.pinned').css('border','1px solid red').css('width','96px !important');	// set same width
+	//$('span:contains("Fill Color")').closest('lucid-callout.pinned').css('z-index','998');	// adjust z-index for expanded area
+	//$('span:contains("Shape Options")').closest('lucid-callout.pinned').css('z-index','999');	// adjust z-index for expanded area
+	
+
+		
+	
+		
+		
+	
+	var dialog_positons_keys = Object.keys(dialog_positons);
+	var offset_left	= $('.toolbox-container').width() + 16;
+	var offset_right	= window.innerWidth - ( $('.toggle-panel:not(.open)').length ? 52 : 302 );
+	
+	
+	for(p=0; p<dialog_positons_keys.length;p++) {
+		var header_text	= dialog_positons_keys[p];
+		
+		/* GET DIALOG */
+		var dialog	= header_text!="Find & Replace" ? $('span:contains("'+header_text+'")').closest('lucid-callout.pinned') : $('lucid-floating-dialog');
+		
+		var pos_x	= dialog_positons[header_text][0];
+		/* GET POSITION X */
+		//var pos_x	= pos_x==0 ? (dialog_align!=='right'? offset_left: offset_right - dialog.width()) : pos_x;
+		var pos_x_offseted	= dialog_align!=='right'? offset_left + pos_x : offset_right - dialog.width() - pos_x;		
+		
+		dialog.attr('vil-stylish',header_text.toLowerCase().replace(/&/,' ').replace(/\s+/,'-')) // attribute for styling via stylish 
+			.css('left',pos_x_offseted)
+			.css('top', dialog_positons[header_text][1]);
+	}
+	
+}
+/** shapesSideBarToggle
+*/
+function shapesSideBarToggle(){
+	//alert( "shapesSideBarToggle" );
+	//$('lucid-left-panel').css('min-width','0');
+	var width_current	= parseInt($('lucid-left-panel').css('width'));
+	var width_new	= width_current > 135 ? 135	: 500;
+	var display	= width_current > 135 ? 'none'	: 'block';
+	
+	$('lucid-left-panel').css('min-width',width_new+'px');
+	$('#shapes-header-manage-shape-libraries >span:not(.arrow-container)').css('display', display);
+	
+}
+
+/* Auto pin popout dialog for "Text Color", "Text Options", "Shape Options", "Fill Color", "Line Color" 
+ */
+if (document.addEventListener) {
+	document.addEventListener("click", function(event) {
+		var targetElement = event.target || event.srcElement;
+		// console.log(targetElement);
+		//  $(targetElement).closest('.click-icon').css('border','1px solid red')
+		if ($(targetElement).closest('lucid-simple-color-picker, #option-text-options, #option-shape-callout, #option-line-options').length > 0) {
+			//console.log(targetElement);
+			$(targetElement).closest('.click-icon');
+				//.css('border', '1px solid red')
+			setTimeout(function() {
+				$('.pin-container .pin-icon')[0].click();
+				setDialogPositions();
+			}, 300);
+		}
+	});
+}
+
+/* ================================================================================================================================== */
+/*	SELECTION:                                                                                                                    */
+/* ================================================================================================================================== */
+
+/** Lock\Unlock Selection
+*/
+function selectionLockToggle(){
+	$('#option-lock-button lucid-icon').click();
+}
+
+
+/* ================================================================================================================================== */
+/*	MAINS TOOLBAR:                                                                                                                    */
+/* ================================================================================================================================== */
+/**
+ *
+ */
+function addVilButtons(){
+	
+	var document_state = window.location.href.match(/\/edit\//gi)?'edit':'view';
+													
+	var links_menu_bar = {
+		'view-edit-document':	[window.location.href.replace(/\/(?:edit|view)\//gi, '/'+(document_state=='edit'?'view':'edit')+'/'),	(document_state=='edit'?'View':'Edit')+' Document',	document_state=='edit'?'https://cdn0.iconfinder.com/data/icons/office-fill/100/document-EYE-128.png':'https://freeiconshop.com/wp-content/uploads/edd/document-edit-solid.png'],
+		//////'google-drive-lucid-folder':	['https://drive.google.com/drive/u/0/folders/0B_tdJXayFOj2Vl9wdjVKTUhGM2c',	'Open GoogleDrive\\Documents\\Lucidchart',	'https://lh3.googleusercontent.com/OscWUyHwrZ50CaatnNWE45UxaSBKX1gfyKg4W7hJRA0LoGeYg3uPrifEhPA6PEd54C8b0hL6=w128-h128-e365'],
+		'lucidchart-search':	['https://www.lucidchart.com/documents#docs?folder_id=search&browser=list&sort=name-desc&document_search=',	'Lucidchart Search Current Document',	'https://lh3.googleusercontent.com/OscWUyHwrZ50CaatnNWE45UxaSBKX1gfyKg4W7hJRA0LoGeYg3uPrifEhPA6PEd54C8b0hL6=w128-h128-e365'],												
+		'google-drive-documents':	['https://drive.google.com/drive/u/0/folders/0B_tdJXayFOj2MGpETF9zdmVuY0E',	'Open GoogleDrive\\Documents Folder',	'https://cdn1.iconfinder.com/data/icons/logotypes/32/google-drive-128.png'],
+		'google-drive-find-current-doc':	['https://drive.google.com/drive/u/0/search?q=',	'Find current document on GoogleDrive',	'http://icons.veryicon.com/png/System/Google%20JFK/search%20pointer.png'],
+	};
+						
+	/* Links to lucidchart files
+		var library_files = {
+			'link/tofile/without/sheet/id':[
+				[ 'link-id', 'link title', 'link-icon' ] // index is sheet number
+			]
+		}
+	*/
+	var library_files = {
+		'https://www.lucidchart.com/documents/edit/ace0c491-88f3-48bc-9e1d-6b782037f97d':[
+			['library-loops',	'LIBRARY LINK - Shape Groups: Loops',	'https://image.flaticon.com/icons/png/128/380/380021.png' ],
+			['library-filetree',	'LIBRARY LINK - Shape Groups: FileTrees',	'https://image.flaticon.com/icons/svg/106/106917.svg' ],			
+			['library-files',	'LIBRARY LINK - Shape Groups: Files',	'https://image.flaticon.com/icons/svg/509/509605.svg' ],			
+			
+		],
+		'https://www.lucidchart.com/documents/edit/e919df98-4665-42d4-9531-3f79678dd7c5':[
+			['library-custom-shapes',	'LIBRARY LINK - Custom Shapes',	'https://image.flaticon.com/icons/svg/109/109724.svg' ],
+		]
+	};
+
+
+	/* Wide\Narrow sidebar toggle */
+	$('#shapes-header-search').after('<div _ngcontent-c14 class="item vil-btn" id="shapes-sidebar-toggle"><img class="vil-icon" title="Shapes Sidebar - Wide &#92; Narrow" src="http://cdn.mysitemyway.com/icons-watermarks/simple-black/layouts-outline/layouts-outline_header-left-sidebar/layouts-outline_header-left-sidebar_simple-black_128x128.png"></img></div>');
+	
+	/* Main bar icons (before "saved" label) */
+	$('lucid-menu-bar').append(
+		'<span class="vil-bar-separator"></span>' +
+		'<div _ngcontent-c64 class="item vil-btn" id="set-dialogs-positions"><img class="vil-icon" title="Set Floating Dialogs Positions" src="http://www.uidownload.com/files/350/28/39/open-website-window-with-arrow-to-the-left-icon.png"></img></div>'+
+		
+		($.map( links_menu_bar, function( data, id ) {
+			return '<a _ngcontent-c64 href="'+data[0]+'" class="item vil-link" id="'+id+'" target="_blank"><img class="vil-icon" title="'+data[1]+'"	src="'+data[2]+'"></img></a>';
+		})).join()
+	);
+	
+	$('lucid-menu-bar').append(
+		($.map( library_files, function( pages, link ) {
+			return '<span class="vil-bar-separator"></span>' + ($.map( pages, function( data, i ) {
+				return '<a _ngcontent-c64 href="'+link+'/'+i+'" class="item vil-link" id="'+data[0]+'" target="_blank"><img class="vil-icon" title="'+data[1]+'"	src="'+data[2]+'"></img></a>';
+			})).join()
+		})).join()
+	);
+	
+	/* Options bar icons */	
+	$('lucid-more-options .more-button').after(
+		/* GROUPS: Go to page level */
+		'<div _ngcontent-c64 class="item vil-btn" id="go-to-page-level"><img class="vil-icon" title="Go to page Level (Alt+Shift+G) - Close group (Alt+G)" src="https://image.flaticon.com/icons/svg/335/335609.svg"></img></div>'+
+		/* Lock | Unlock selection toggle */
+		'<div _ngcontent-c64 class="item vil-btn" id="lock-toggle"><img class="vil-icon" title="Lock\\Unlock (Shift+Space)" src="https://image.flaticon.com/icons/png/512/166/166238.png"></img></div>'				
+	);
+		
+
+}
+
+
+
+/* ================================================================================================================================== */
+/*	 SHAPE POSITION:                                                                                                                  */
+/* ================================================================================================================================== */
+
+var selectors_shape = '#position-options-width-spinner, #position-options-height-spinner, #position-options-x-position-spinner, #position-options-y-position-spinner, #position-options-rotation-spinner';
+
+/**
+ *
+ */
+function inputAllCheckValue(){
+	//console.log('inputAllCheckValue()');
+	$(selectors_shape).find('input').each(function(){
+		shapePositionCheckValue($(this)); 
+	});
+}
+
+/** Colorize Shape otions input values by value
+ *
+ */
+function shapePositionCheckValue(input){
+	//console.log('shapePositionCheckValue()');
+	//var round = input.closest('#position-options-rotation-spinner').length ? 5 : 25; // round position OR rotation
+	//var value	= parseInt(input.val()) / round;
+	//var color	= parseInt(value) === value  ?'':'#D0691C';
+	
+	var color	= 'red';
+	var round_5	= parseInt(input.val()) / 5;
+	var round_25	= parseInt(input.val()) / 25;	
+	
+
+	if(parseInt(round_25) === round_25)
+		color	= '';
+	else if(parseInt(round_5) === round_5)
+		color	= 'orange';		
+	input.css('color',color);
+	
+}
+
+/** onShapeSelected
+*/
+function onShapeSelected(event){
+	setTimeout(function(){
+		
+		var spinner = $(event.target).closest('lucid-spinner');
+		/* If position spinner */
+		if ( spinner.closest('lucid-position-options').length )
+				shapePositionCheckValue(spinner.find('input'));
+		else if ( $('#position-options-width-spinner>div').hasClass('disabled')!==true){ // if shape is selected
+			/* If clicked  element is not in bars and dialogs */
+			if($(event.target).closest('#editor-title-bar, .right-panel-container, .chart-option-bar, lucid-callout').length === 0)
+				inputAllCheckValue();
+		}
+	}, 100);
+	
+}
+
+
+
+/* ================================================================================================================================== */
+/*	RIGHT SIDEBAR:                                                                                                                    */
+/* ================================================================================================================================== */
+
+/** Expand page settings on right sidebar
+*/
+function expandPageSettings(){
+	$('#settings-panel lucid-collapse-header.collapsed').click();
+	checkPageSettings();
+}
+
+/** check Page Settings and colorize uncommon settings
+ * 1) check if units are "pixels"
+ * 2) check grid size
+*/
+function checkPageSettings(){
+	/* PAGE UNITS SETTING Mark RED if 'px' units not set */
+	$('#page-settings-page-units-dropdown .text:not(:contains("px"))').css('background-color','red');
+	/* PAGE GRIDSETTING Mark RED if '25 px' not set */	
+	if ($('.grid-spacing-spinner input').val()!='25 px')$('.grid-spacing-spinner input').css('background-color','red');
+}
+
+
+
+/* ================================================================================================================================== */
+/*	BREADCUMS:                                                                                                                        */
+/* ================================================================================================================================== */
+
+/** breadcumsEditClass
+*/
+function breadcumsEditClass(breadcums,breadcums_data){
+	$(breadcums).each(function(index){
+		//console.log(index)
+		var class_val = breadcums_data[index];
+		if(typeof class_val!=='undefined'){
+			$(this).removeClass('bc-set bc-group bc-shape');
+			$(this).addClass(class_val).html(class_val.replace('bc-',''));
+		}
+	});
+}
+
+/** breadcumsSetNamedGroups
+*/
+function breadcumsSetNamedGroups(){
+	
+	var groups_count	= $('.groupNav-container span:contains("Group")').length;
+	var breadcums_data	= $('lucid-focus-breadcrumb').data('breadcrumbs-store');
+
+	var time_count = typeof breadcums_data !='undefined' && (breadcums_data.length > groups_count) ? 100 : 150;
+	
+	setTimeout( function(){ 
+	
+		var groups_count	= $('.groupNav-container span:contains("Group")').length;
+		var breadcums_cont	= $('lucid-focus-breadcrumb .container');
+		var breadcums_all	= breadcums_cont.find('.breadcrumb'); // not page element
+		var breadcums	= breadcums_cont.find('.breadcrumb:gt('+(breadcums_all.length - groups_count-1)+')'); // select group element after "page" AND "layer"
+		var breadcums_length	= breadcums.length;
+		//var breadcums_data	= $('lucid-focus-breadcrumb').data('breadcrumbs-store');
+		var breadcums_classes	= [ 'bc-set','bc-group','bc-shape'];	
+	
+		if( typeof breadcums_data =='undefined' || breadcums_all.length === 0 )
+			breadcums_data = [];
+			//console.log('BREADCUMS RESET');
+		if(breadcums_length > 0 ){
+			//console.log('GROUP SELECTED');
+			var shape_selected	= $('#option-line-options>div').hasClass('disabled') && $('#option-action-button>div').hasClass('disabled')===false;
+			//console.log('shape_selected='+shape_selected);
+			
+			//if( breadcums_length != breadcums_data.length ){
+				console.log('GROUP EDITED '+breadcums_length +' > ' +  breadcums_data.length);
+				console.log( 'breadcums_data IN =\n'+JSON.stringify(breadcums_data , null, 2) );
+				
+				if(!shape_selected && breadcums_classes.length > breadcums_length)
+					breadcums_classes.splice(-1);
+	
+				breadcums_data = breadcums_classes.slice(breadcums.length*-1);
+				console.log( 'breadcums_data OUT =\n'+JSON.stringify(breadcums_data , null, 2) );			
+			//}
+			breadcumsEditClass(breadcums,breadcums_data);
+		}
+		$('lucid-focus-breadcrumb').data('breadcrumbs-store',breadcums_data);
+		
+	}, time_count);
+}
+
+
+
+/* ================================================================================================================================== */
+/*		GROUPS:                                                                                                                       */ 
+/* ================================================================================================================================== */
+/** Go to page level of selection
+ * Function clicks on breadcum 'PAGE'
+*/
+function breadcumsClick(index){
+	if (index<0)
+		index = $('.breadcrumb').length + index;
+	$('.breadcrumb:eq('+index+')').click();
+}
+
+
+
+/* ================================================================================================================================== */
+/*	EVENTS                                                                                                                            */ 
+/* ================================================================================================================================== */
+
+/**
+ */
+$( document ).ready(function() {
+	
+	/* add vil buttons */	
+	addVilButtons();	
+	
+	/* ON CLICK - ON RIGHT SIDEBAR OPEN - by one of icon */
+	$( ".tabs-container .tabs li" ).on( "click", function(){
+		setDialogPositions();
+	}); 
+
+	/* ON CLICK - Page settings - */
+	$( "lucid-right-panel .toggle-panel:not(.open) + #settings-tab-button" ).on( "click", function() {
+		expandPageSettings();
+	});
+
+	/* ON INIT - EXPAND Right Sidebar on Page settings IF "Blank Diagram" ELSE Lyers sections*/
+	$('#document_title span').html() == "Blank Diagram" ? $("#settings-tab-button").click() : $('#layers-tab-button').click();
+	expandPageSettings();
+	
+	/* set dialogs */
+	setDialogPositions();
+
+	
+	/* ON INIT - COLORIZE INPUT VALUES */
+	inputAllCheckValue();
+
+	/* ON MOUSEUP - Check on value changed */	
+	$(document).mouseup(function(event) {
+		onShapeSelected(event);
+	});
+	/* ON MOUSEUP - Check on value changed */	
+	$(document).mouseup(function(event) {
+			breadcumsSetNamedGroups();
+	});
+	/*
+		ON DOCUMENT SEARCH PAGE
+		https://www.lucidchart.com/documents#docs?folder_id=search&browser=list&sort=name-desc&document_search=Test
+	 */
+	var search_document =  /document_search=(.*)/gi.exec( window.location.href);
+	if(search_document)
+		$('#search-text').val(search_document[1]).focus();
+	
+	/*
+	 * KEYPRESS EVENTS http://www.epigroove.com/blog/check-for-modifier-keys-when-using-jquerys-keypress
+	 **/
+	$(document).keydown(function(e) {
+		//e.preventDefault(); 
+		if ( e.which == 71) { // 'G'
+		    //e.preventDefault(); 
+			if (e.altKey && e.shiftKey   ) {
+				//console.log('Alt+SHIFT+G');
+				breadcumsClick(0);
+				breadcumsSetNamedGroups();
+			} else if (e.altKey) {
+				//console.log('Alt+G');
+				breadcumsClick(-2);
+				breadcumsSetNamedGroups();
+			}
+		} else if ( e.which == 32 ) { //'space'
+		    //e.preventDefault(); 
+			if (e.shiftKey )
+				selectionLockToggle();
+		} else if ( e.which == 70 ) { //'f'
+		    //e.preventDefault(); 
+			if (e.ctrlKey  )
+				setDialogPositions(); // set dialog positions, "Find & Replace" dialog does not show sometimes
+		}
+	});
+});
+
+/* Reposition dialogs on Window resize */
+$(window).resize(function() {
+	setDialogPositions();
+});
+
+
+/* ================================================================================================================================== */
+/*	EVENTS - CUSTOM BUTTONS                                                                                                           */
+/* ================================================================================================================================== */
+
+$( document ).ready(function() {
+
+	$( ".vil-btn" ).on( "click", function() {
+		var id = $(this).attr('id');
+		if (id=='set-dialogs-positions')
+			setDialogPositions();
+		else if (id=='shapes-sidebar-toggle')
+			shapesSideBarToggle();
+		else if (id=='go-to-page-level')
+			breadcumsClick(0);
+			
+	});
+	
+	$( ".vil-link" ).on( "click", function(e) {
+		var id = $(this).attr('id');
+		if (id=='lucidchart-search'||id=='google-drive-find-current-doc'){
+			e.preventDefault();
+			 window.open($(this).attr('href')+$('#document_title span').html());
+		}
+	});	
+});
+
+

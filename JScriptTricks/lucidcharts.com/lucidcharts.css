@@ -1,0 +1,8 @@
+#prompt-dialog-no-button:after{
+  content:'Double click on dialog for keepboth';
+  display:block;
+  position:absolute;
+  top: 32px;
+  left: 12px;
+  color:red;
+}
