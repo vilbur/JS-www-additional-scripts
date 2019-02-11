@@ -1,44 +1,44 @@
-/*==================================================================================================================================*/
-/*                                                                         
-/* BROWSER WINDOW:
-/*    Add current script name to window title
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* RESOURCE LIST:
-/*    Add tooltip of file prefix on hovered item                           
-/*    Context menu on double click           
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* FILE TABS:
-/*    Close tab on middle click              
-/*    Add Tooltip about prefix to reource list items                       
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* CODE AREA:
-/*    Add class '.this' to <span>this</span> 
-/*    Add Tooltip about prefix to reource list items                       
-/*                  
-/* ------------------------------------------------------------------------
-/* FIND & REPLACE DIALOG:
-/*    'Replace In All' scripts button added  
-/*    Mark script link where 'Replaced all' was used                       
-/*    Mark active script link                
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* LIBRARY DIALOG:
-/*   Auto select highest versions of libraries                             
-/*                  
-/*                  
-/*==================================================================================================================================*/
+/*==================================================================================================================================
+																			
+	BROWSER WINDOW:
+	Add current script name to window title
+					
+	------------------------------------------------------------------------
+					
+	RESOURCE LIST:
+	Add tooltip of file prefix on hovered item                           
+	Context menu on double click           
+					
+	------------------------------------------------------------------------
+					
+	FILE TAB:
+	Close tab on middle click              
+	Add Tooltip about prefix to reource list items                       
+					
+	------------------------------------------------------------------------
+					
+	CODE AREA:
+	Add class '.this' to <span>this</span> 
+	Add Tooltip about prefix to resource list items                       
+					
+	------------------------------------------------------------------------
+	FIND & REPLACE DIALOG:
+	'Replace In All' scripts button added  
+	Mark script link where 'Replaced all' was used                       
+	Mark active script link                
+					
+	------------------------------------------------------------------------
+					
+	LIBRARY DIALOG:
+	Auto select highest versions of libraries                             
+					
+					
+==================================================================================================================================*/
 
 
 
-/** https://gist.github.com/chrisjhoughton/7890303
- *
+/** Wait for element Exists
+ * https://gist.github.com/chrisjhoughton/7890303
  */
 var waitForEl = function(selector, callback) {
   if (jQuery(selector).length) {

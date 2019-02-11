@@ -8,18 +8,6 @@
 /*
 /*==================================================================================================================================*/
 
-/** https://gist.github.com/chrisjhoughton/7890303
- *
- */
-var waitForEl = function(selector, callback) {
-  if (jQuery(selector).length) {
-    callback();
-  } else {
-    setTimeout(function() {
-      waitForEl(selector, callback);
-    }, 100);
-  }
-};
 
 /* ================================================================================================================================== */
 /*	MENU:                                                                                                                     
@@ -36,16 +24,13 @@ function setMenuItemsContentToAttribute(){
 
 
 
-
-
-
 /* ================================================================================================================================== */
 /*	INIT                                                                                                                            */
 /* ================================================================================================================================== */
 	
 $(document).ready(function() {
 	/* Wait for custom menu items exists */
-	waitForEl('#docs-help-menu + .menu-button[role="button"]', function() {
+	waitThenElelemntExists('#docs-help-menu + .menu-button[role="button"]', function() {
 		setMenuItemsContentToAttribute();
 	});
 	

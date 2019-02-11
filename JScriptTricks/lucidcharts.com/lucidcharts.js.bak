@@ -182,7 +182,7 @@ if (document.addEventListener) {
 			setTimeout(function() {
 				$('.pin-container .pin-icon')[0].click();
 				setDialogPositions();
-			}, 300);
+			}, 500);
 		}
 	});
 }

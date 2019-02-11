@@ -198,7 +198,7 @@ function selectionLockToggle(){
 }
 
 /* ================================================================================================================================== */
-/*	MAINS TOOLBAR:
+/*	MAIN TOOLBAR:
 /* ================================================================================================================================== */
 /**
  *
@@ -212,7 +212,7 @@ function addVilButtons(){
 		//////'google-drive-lucid-folder':	['https://drive.google.com/drive/u/0/folders/0B_tdJXayFOj2Vl9wdjVKTUhGM2c',	'Open GoogleDrive\\Documents\\Lucidchart',	'https://lh3.googleusercontent.com/OscWUyHwrZ50CaatnNWE45UxaSBKX1gfyKg4W7hJRA0LoGeYg3uPrifEhPA6PEd54C8b0hL6=w128-h128-e365'],
 		'lucidchart-search':	['https://www.lucidchart.com/documents#docs?folder_id=search&browser=list&sort=name-desc&document_search=',	'Lucidchart Search Current Document',	'https://lh3.googleusercontent.com/OscWUyHwrZ50CaatnNWE45UxaSBKX1gfyKg4W7hJRA0LoGeYg3uPrifEhPA6PEd54C8b0hL6=w128-h128-e365'],												
 		'google-drive-documents':	['https://drive.google.com/drive/u/0/folders/0B_tdJXayFOj2MGpETF9zdmVuY0E',	'Open GoogleDrive\\Documents Folder',	'https://cdn1.iconfinder.com/data/icons/logotypes/32/google-drive-128.png'],
-		'google-drive-find-current-doc':	['https://drive.google.com/drive/u/0/search?q=',	'Find current document on GoogleDrive',	'http://icons.veryicon.com/png/System/Google%20JFK/search%20pointer.png'],
+		'google-drive-find-current-doc':	['https://drive.google.com/drive/u/0/search?q=',	'Find current document on GoogleDrive',	'https://www.flaticon.com/premium-icon/icons/svg/1199/1199419.svg'],
 	};
 						
 
@@ -223,7 +223,7 @@ function addVilButtons(){
 	/* Main bar icons (before "saved" label) */
 	$('lucid-menu-bar').append(
 		'<span class="vil-bar-separator"></span>' +
-		'<div _ngcontent-c64 class="item vil-btn" id="set-dialogs-positions"><img class="vil-icon" title="Set Floating Dialogs Positions" src="http://www.uidownload.com/files/350/28/39/open-website-window-with-arrow-to-the-left-icon.png"></img></div>'+
+		'<div _ngcontent-c64 class="item vil-btn" id="set-dialogs-positions"><img class="vil-icon" title="Set Floating Dialogs Positions" src="https://image.flaticon.com/icons/svg/814/814143.svg"></img></div>'+
 		
 		($.map( links_menu_bar, function( data, id ) {
 			return '<a _ngcontent-c64 href="'+data[0]+'" class="item vil-link" id="'+id+'" target="_blank"><img class="vil-icon" title="'+data[1]+'"	src="'+data[2]+'"></img></a>';
@@ -260,7 +260,7 @@ function addVilButtons(){
 	/* Options bar icons */	
 	$('lucid-more-options .more-button').after(
 		/* GROUPS: Go to page level */
-		'<div _ngcontent-c64 class="item vil-btn" id="go-to-page-level"><img class="vil-icon" title="Go to page Level (Alt+Shift+G) - Close group (Alt+G)" src="https://image.flaticon.com/icons/svg/335/335609.svg"></img></div>'+
+		'<div _ngcontent-c64 class="item vil-btn" id="go-to-page-level"><img classset-dialogs-positions="vil-icon" title="Go to page Level (Alt+Shift+G) - Close group (Alt+G)" src="https://image.flaticon.com/icons/svg/351/351634.svg"></img></div>'+
 		/* Lock | Unlock selection toggle */
 		'<div _ngcontent-c64 class="item vil-btn" id="lock-toggle"><img class="vil-icon" title="Lock\\Unlock (Shift+Space)" src="https://image.flaticon.com/icons/png/512/166/166238.png"></img></div>'				
 	);

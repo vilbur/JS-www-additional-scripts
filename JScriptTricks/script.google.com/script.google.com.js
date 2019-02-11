@@ -1,70 +1,32 @@
-/*==================================================================================================================================*/
-/*                                                                         
-/* BROWSER WINDOW:
-/*    Add current script name to window title
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* RESOURCE LIST:
-/*    Add tooltip of file prefix on hovered item                           
-/*    Context menu on double click           
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* FILE TABS:
-/*    Close tab on middle click              
-/*    Add Tooltip about prefix to reource list items                       
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* CODE AREA:
-/*    Add class '.this' to <span>this</span> 
-/*    Add Tooltip about prefix to reource list items                       
-/*                  
-/* ------------------------------------------------------------------------
-/* FIND & REPLACE DIALOG:
-/*    'Replace In All' scripts button added  
-/*    Mark script link where 'Replaced all' was used                       
-/*    Mark active script link                
-/*                  
-/* ------------------------------------------------------------------------
-/*                  
-/* LIBRARY DIALOG:
-/*   Auto select highest versions of libraries                             
-/*                  
-/*                  
-/*==================================================================================================================================*/
-
-
-
-/** Wait for element Exists
+/** Wait until certain element exists
  * https://gist.github.com/chrisjhoughton/7890303
  */
-var waitForEl = function(selector, callback) {
+var waitThenElelemntExists = function(selector, callback) {
   if (jQuery(selector).length) {
-    callback();
+		callback();
   } else {
     setTimeout(function() {
-      waitForEl(selector, callback);
+		waitThenElelemntExists(selector, callback);
     }, 100);
   }
 };
-
-
-
-
-/* ================================================================================================================================== */
-/*	BROWSER WINDOW:
-/* ================================================================================================================================== */
+/*==================================================================================================================================
+																			
+	BROWSER TABS:
+	Add current script name to window title
+					
+==================================================================================================================================*/
 
 /** set Window Title by Project name and selected script
 */
-function setWindowTitle(){
-	setTimeout( function(){ 
+function setWindowTitle()
+{
+	setTimeout( function()
+	{
 		var name_project	= $('#docs-title-inner').html();
 		var name_script	= $('.gwt-TabLayoutPanelTab-selected .gwt-Label.name').html();
 		if (!name_script.match(/^\!.*/gi)) 
-			document.title = name_project +' - '+ name_script;
+			document.title = name_project +' - '+ name_script + ' | Script #GAS';
 	}, 500);
 }
 
@@ -79,57 +41,49 @@ $(document).on('click','.project-items-list>div', function() {
 });
 
 
-
-
 /* ================================================================================================================================== */
-/*	RESOURCE LIST:
+/*	INIT                                                                                                                              */
 /* ================================================================================================================================== */
+	
+//$(document).ready(function() {
+//	setTimeout( function(){ 
+//		setWindowTitle();
+//	}, 500);
+//});
 
+
+
+/*==================================================================================================================================
+																			
+	CODE AREA:
+	Add class '.this' to <span>this</span> 
+	Add Tooltip about prefix to resource list items  
+					
+==================================================================================================================================*/
+
+/** addClassToSpan_this
+*/
+function addClassToSpan_this(){
+	$('.code-area').find('.cm-variable-2:not(.this):contains("this")').addClass('this');
+}
+
+/*
+	====== EVENTS ======
+*/
 /** Show dropdown menu on file in filelist
 * // select opened Tabs does not work
 */
-$(document).on('dblclick','.project-items-list>div', function() {
-	//var last_tab = $('.gwt-TabLayoutPanelTabs .gwt-TabLayoutPanelTab:last-of-type()');
-	$(this).find('.gwt-Image.dropdown').click();
+$(document).on('click','.code-area', function() {
+	addClassToSpan_this();
 });
+/*==================================================================================================================================
+					
+	EDITOR TABS:
+	Close tab on middle click              
+	Add Tooltip about prefix to reource list items                       
 
+==================================================================================================================================*/
 
-/**  Add Tooltip on hovered item in Resourcel list
-*/
-$(document).on('mouseover','.project-items-list>div', function() {
-	//setWindowTitle();
-	//setTabColor(this);
-	var resource_title	= $(this).find('.name');
-	var title	= resource_title.html();
-	var tooltip	= '';
-	var prefix_chars	= [ '!', '─', '~!~', '~', '_' ];
-	
-	var match_title = (new RegExp('^('+prefix_chars.join('|')+')', 'gi')).exec(title);
-	if (match_title) 
-		switch (match_title.pop()){
-			case prefix_chars[0]: tooltip = "MAIN SCRIPT FILE - Same name as project";break;
-			case prefix_chars[1]: tooltip = "Library file - Same content in all scripts";break;
-			case prefix_chars[2]: tooltip = "PLACE THIS FILE TO MAIN SCRIPT";break;
-			case prefix_chars[3]: tooltip = "Interface file - Same functions in files, different cotnent per script";break;
-			case prefix_chars[4]: tooltip = "Html file";break;
-		}
-
-	if(tooltip!==''){
-		tooltip = '    // "'+match_title.pop()+'" prefix for: '+ tooltip+' ';
-		resource_title.attr('title', title + tooltip );
-	}
-
-});
-
-
-
-
-
-
-
-/* ================================================================================================================================== */
-/*	FILE TAB:
-/* ================================================================================================================================== */
 /** setTabColor
  * for Stylish styling
 */
@@ -152,29 +106,14 @@ $(document).on('mousedown','.gwt-TabLayoutPanelTabs>div', function(e) {
 });
 
 
+/*==================================================================================================================================
 
-/* ================================================================================================================================== */
-/*	CODE AREA:
-/* ================================================================================================================================== */
-/** addClassToSpan_this
-*/
-function addClassToSpan_this(){
-	$('.code-area').find('.cm-variable-2:not(.this):contains("this")').addClass('this');
-}
-
-/*
-	====== EVENTS ======
-*/
-/** Show dropdown menu on file in filelist
-* // select opened Tabs does not work
-*/
-$(document).on('click','.code-area', function() {
-	addClassToSpan_this();
-});
-
-/* ================================================================================================================================== */
-/*	FIND & REPLACE DIALOG:
-/* ================================================================================================================================== */
+	FIND & REPLACE DIALOG:
+	'Replace In All' scripts button added  
+	Mark script link where 'Replaced all' was used                       
+	Mark active script link                
+					
+==================================================================================================================================*/
 
 /** Add button 'replace in all scripts' 
 */
@@ -272,96 +211,103 @@ $(document).on('blur', '.gwt-TextBox.input[aria-label="Find"]', function(){
 $(document).on('click', '#replace-in-all-scripts', function(){
 	repalceInAll();
 });
+/*==================================================================================================================================
+																			
+	GITHUB REPOSIORY DROPDOWN
+	Script for chrome extension 'Google Apps Script GitHub Assistant'
+	https://chrome.google.com/webstore/detail/google-apps-script-github/lfjcgcmkmjjlieihflfhjopckgpelofo
 
 
+				
+==================================================================================================================================*/
 
 
+var whitelist_repositories	= ['vilbur/GAS'];
 
-
-/* ================================================================================================================================== */
-/*	MANAGE VERSIONS DIALOG:
-/* ================================================================================================================================== */
-/** Automatically add text to first version of script.
- *  1st version of script should be 'EMPTY' NON WORKING script, THIS ALLOWS TEMPORARY DISABLE SCRIPT IN LIBRARY 
+/** Remove non related items from GitHub repositories 
+ *  @param	['mask']	whitelist_repositories	Oarts of names of repositories which will not be removed
  */
-function setDescriptionOfFrisrtVersion(){
-	if($('.version-dialog .header-row + tr').length===0){
-		$('.version-dialog .smart-textbox').css('color','red').val('DISABLED version of script.');
-	}
-}
-
-
-/*
-	====== EVENTS ======
-*/
-/** Set auto description if first revision
- *
- */
-$(document).on('click', 'span.goog-menuitem-label:contains("Manage versions...")', function(){
-	setTimeout( function(){ 
-		setDescriptionOfFrisrtVersion();
-	}, 1000);
-});
-
-
-/* ================================================================================================================================== */
-/*	LIBRARY DIALOG:
-/* ================================================================================================================================== */
-
-/** auto select highest library version
-*/
-function autoSelectHigherLibraryVersion(){ 
-	
-	/* Wait for library table exists */
-	waitForEl('.maestro-dialog .lined-table .header-row + tr', function() {
-		var answer = confirm ("Set all libraries to highest version ?");
-		if (answer){
-			var timeout;
-			/* Click on every dropdown */
-			$('.row .version input').each(function(index){
-			var input	= $(this);
-			timeout	= ((index+1)*500);
-				setTimeout( function(){
-					/* Click on every dropdown */
-					input.click();
-					/* Choose highest version */
-					setTimeout( function(){ 
-						$('.version-picker .versions tr.version:first-of-type .description').click();
-					}, timeout+200);
-				},timeout);
-			});
-			/* Click on Save button */
-			setTimeout( function(){ 
-				$('.maestro-dialog .buttons .gwt-Button:first-of-type').click();
-			}, timeout+1000);
-		}
+function removeNonGasRepositories( whitelist_repositories )
+{
+	/** selectors
+	 * @return	[':not(:contains(SELECTOR)']	array of whitelisted whitelist_repositories
+	 */
+	var selectors = whitelist_repositories.map(function(repository){
+		return ':not(:contains('+repository+'))';
 	});
 	
+	var non_gas_repositories = 'div'+selectors.join('');
 	
+	$('.scm-item.goog-menuitem:not(.scm-new-repo, .scm-use-gist)').each(function(){
+		$(this).find( non_gas_repositories )
+			.closest('.scm-item')
+				.remove();
+	}); 
 }
 
-/*
-	====== EVENTS ======
-*/
-/** On libraries open, update all versions
- *
+
+/**  Select current repository 
  */
-$(document).on('click', 'span.goog-menuitem-label:contains("Libraries...")', function(){
-	setTimeout( function(){ 
-		autoSelectHigherLibraryVersion();
-	}, 1000);
-});
+function selectCurrentRepository( )
+{
+	var current_name = $('.docs-title-inner').text();
 
-
-/* ================================================================================================================================== */
-/*	INIT                                                                                                                              */
-/* ================================================================================================================================== */
+	$('.goog-menuitem-content[data*="'+current_name+'"]')
+		.css('border','1px solid #64de89')
+		.click();	
+}
+/**  
+ *	
+ */
+function cssButtons( )
+{
+	var buttons	= ['#push-button div div', '#pull-button div div'];
 	
-$(document).ready(function() {
-	setTimeout( function(){ 
-		setWindowTitle();
-	}, 500);
+	$(buttons[0]).css('color', 'orange');
+	$(buttons[1]).css('color', 'lightgreen');
+	
+	$(buttons.join(',')).css('font-size', '24px');
+}
+
+/**  
+ *	
+ */
+function cssBranch( )
+{
+	$('#scm-bind-branch:contains("Branch: master")')
+		.css('color', 'lightgreen');
+}
+
+
+/**  Init functions 
+ *	
+ */
+function initScritsForGitHubExtension( )
+{
+	removeNonGasRepositories(whitelist_repositories);
+	selectCurrentRepository();
+	cssButtons();
+	cssBranch();
+}
+
+
+waitThenElelemntExists('#scm-bind-repo, #scm-bind-branch', function() {
+	setTimeout( function(){
+		initScritsForGitHubExtension(); 		
+	}, 2000);
 });
+/*==================================================================================================================================
 
+	RESOURCE LIST:
+	Context menu on double click           	
+					
+==================================================================================================================================*/
 
+/** Show dropdown menu on file in filelist
+* // select opened Tabs does not work
+*/
+$(document).on('dblclick','.project-items-list>div', function() {
+	//var last_tab = $('.gwt-TabLayoutPanelTabs .gwt-TabLayoutPanelTab:last-of-type()');
+	$(this).find('.gwt-Image.dropdown').click();
+});
 
