@@ -1,0 +1,44 @@
+*[title^="!"]
+{
+  color: #DC965A !important
+}
+
+*[title^="#"]
+{
+  color: #64B8E5 !important
+}
+
+*[title^="*"]
+{
+  color: #71BF44 !important
+}
+
+*[title^="@"]
+{
+  color:violete !important
+}
+
+
+*[title^="?"]
+{
+  color: #B6465F !important
+}
+
+
+*[title^="📺"]
+{
+  color: #7392B7 !important
+}
+
+*[title~="DHARMA"]
+{
+  color: yellow !important
+}
+
+
+*[title="History"]
+,*[title="Watch Later"]
+,*[title="Liked Videos"]
+{
+  color: #878C8F !important
+}

@@ -18,26 +18,5 @@ function setWindowTitle()
 	}, 500);
 }
 
-/*
-	====== EVENTS ======
-*/
-/**  Add current script name to window title
-*/
-$(document).on('click','.project-items-list>div', function() {
-	setWindowTitle();
-	setTabColor(this);
-});
-
-
-/* ================================================================================================================================== */
-/*	INIT                                                                                                                              */
-/* ================================================================================================================================== */
-	
-//$(document).ready(function() {
-//	setTimeout( function(){ 
-//		setWindowTitle();
-//	}, 500);
-//});
-
 
 

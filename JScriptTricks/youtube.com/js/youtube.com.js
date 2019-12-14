@@ -16,10 +16,11 @@ function removeWatchedVideos()
 		window.clearInterval(interval_remove_watched_videos);
 
 	var n = 0;
-	window.interval_remove_watched_videos = setInterval(function () {
+	window.interval_remove_watched_videos = setInterval(function ()
+	{
 		$('yt-formatted-string:contains("WATCHED")').closest("ytd-grid-video-renderer").remove();
 
-		console.log( 'Wathched videos removed - JS Tricks' );
+		console.log( 'JS Tricks Chrome extension | Wathched videos removed' );
 		if (++n === 100)
 			window.clearInterval(interval_remove_watched_videos);
 	}, 2000);
@@ -30,6 +31,7 @@ function removeWatchedVideos()
  */
 function sortListItems(event)
 {
+	console.log( 'JS Tricks Chrome extension | Plailist has been sorted with' );
 	/** getIds
 	 */
 	var getIds = function(label=false)
@@ -58,7 +60,7 @@ function sortListItems(event)
 		};
 		setTimeout( function(){
 			$(event.data.list).sortList();			
-		}, 500);
+		}, 1000);
 	});      
 }
 /** Bind events to buttons which shows playlists
@@ -68,7 +70,7 @@ var bindSortListItems = function(event=null)
 	
 	var playlists =
 	{
-		'#button[aria-label="Add to"]':	{list:'#playlists',	listitem:'ytd-playlist-add-to-option-renderer',	label:'#label'},
+		'#button[aria-label="Save"]':	{list:'#playlists',	listitem:'ytd-playlist-add-to-option-renderer',	label:'#label'},
 		'#expander-item a#endpoint':	{list:'#expandable-items',	listitem:'ytd-guide-entry-renderer',	label:'a'},
 	};
 	

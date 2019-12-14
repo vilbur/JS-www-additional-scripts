@@ -4,8 +4,9 @@
 	Script for chrome extension 'Google Apps Script GitHub Assistant'
 	https://chrome.google.com/webstore/detail/google-apps-script-github/lfjcgcmkmjjlieihflfhjopckgpelofo
 
-
-				
+	1) Remove non related items from GitHub repositories 
+	2) Select current repository
+	
 ==================================================================================================================================*/
 
 

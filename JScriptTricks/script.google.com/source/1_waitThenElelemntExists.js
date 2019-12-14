@@ -10,3 +10,10 @@ var waitThenElelemntExists = function(selector, callback) {
     }, 100);
   }
 };
+
+
+
+$( document ).ready(function()
+{
+	alert( window.location.href ); 
+});
